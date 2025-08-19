@@ -73,12 +73,12 @@ function loadChatLogs() {
   }
 }
 
-function saveChatLog({ fromUser, toUser, message }) {
+function saveChatLog({ fromUser, message }) {
   try {
     const wb = xlsx.readFile(CHAT_LOGS_PATH);
     const ws = wb.Sheets[wb.SheetNames[0]];
     const arr = xlsx.utils.sheet_to_json(ws, { header: 1 });
-    arr.push([fromUser, toUser, message]);
+    arr.push([fromUser, message]);
     const newWs = xlsx.utils.aoa_to_sheet(arr);
     wb.Sheets[wb.SheetNames[0]] = newWs;
     xlsx.writeFile(wb, CHAT_LOGS_PATH);
@@ -255,3 +255,4 @@ const PORT = 3000;
 server.listen(PORT, () => {
   console.log(`서버 실행 중: http://localhost:${PORT}`);
 });
+
