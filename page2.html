@@ -58,18 +58,31 @@ socket.on('receiveMessage', ({ fromUser, message }) => {
   addMessage(fromUser, message);
 });
 
+
 function addMessage(fromUser, message) {
   const div = document.createElement('div');
   div.classList.add('message');
 
-  // 링크 감지: http:// 또는 https:// 로 시작하면 <a> 태그로
   const urlRegex = /(https?:\/\/[^\s]+)/g;
-  const formattedMessage = message.replace(urlRegex, url => `<a href="${url}" target="_blank">${url}</a>`);
+  const formattedMessage = message.replace(urlRegex, url => 
+    `<a href="#" class="chat-link" data-url="${url}">${url}</a>`
+  );
 
   div.innerHTML = `<span class="from">${fromUser}:</span> ${formattedMessage}`;
-  chatBox.appendChild(div);
-  chatBox.scrollTop = chatBox.scrollHeight;
+  document.getElementById('chatBox').appendChild(div);
+  div.scrollIntoView();
+
+  // 링크 클릭 이벤트 등록
+  div.querySelectorAll('.chat-link').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault(); // 새로고침 막기
+      const url = link.dataset.url;
+      socket.emit('linkClicked', { fromUser, link: url });
+      console.log('링크 클릭:', fromUser, url);
+    });
+  });
 }
+
 
 // 메시지 전송
 sendBtn.addEventListener('click', () => {
